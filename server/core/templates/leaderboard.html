@@ -1,0 +1,15 @@
+{% extends '_base.html' %}
+
+{% load static %}
+
+{% block main %}
+    <div class="ct-block">
+        <h1>Leaderboard</h1>
+        <hr>
+        <ol>
+            {% for player in object_list %}
+                <li>{{ player.username }} &ndash; {{ player.elo }}</li>
+            {% endfor %}
+        </ol>
+    </div>
+{% endblock %}

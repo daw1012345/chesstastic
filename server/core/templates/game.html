@@ -1,0 +1,252 @@
+{% extends '_base.html' %}
+
+{% load static %}
+
+{% block main %}
+    <div class="ct-block">
+        <h1>
+            {% if object.game_over %}Replay game{% else %}Play game{% endif %}
+        </h1>
+        <hr>
+        <p>
+            <strong>White:</strong> {{ object.white.username }}
+            <br>
+            <strong>Black: </strong> {{ object.black.username }}
+            {% if object.game_over %}
+                <br>
+                <strong>Winner: </strong>
+                {% if object.winner == object.white %}
+                    {{ object.white.username }}
+                {% elif object.winner is None %}
+                    tied
+                {% else %}
+                    {{ object.black.username }}
+                {% endif %}
+            {% endif %}
+        </p>
+        {% if object.game_over %}
+            <p>
+                <a href="#" id="prev">Previous move</a>
+                <span id="position">Loading replay...</span>
+                <a href="#" id="next">Next move</a>
+                <br>
+                <em>Best move: <span id="bestmove">unavailable</span></em>
+            </p>
+        {% else %}
+            <p>
+                <a href="#" id="resign">Give up</a>
+            </p>
+        {% endif %}
+        <table class="ct-board" id="board"></table>
+    </div>
+{% endblock %}
+
+{% block head %}
+    <script>
+
+        const GAME_OVER = {% if object.game_over %}true{% else %}false{% endif %};
+        const CHARS = {
+            'black.pawn': '♟',
+            'black.rook': '♜',
+            'black.knight': '♞',
+            'black.king': '♚',
+            'black.queen': '♛',
+            'black.bishop': '♝',
+            'white.pawn': '♙',
+            'white.rook': '♖',
+            'white.knight': '♘',
+            'white.king': '♔',
+            'white.queen': '♕',
+            'white.bishop': '♗',
+        }
+        window._chesstastic = {};
+
+        function renderState(boardState) {
+            let element = document.getElementById('board');
+            let row = null;
+            element.innerHTML = '';
+            boardState.forEach(square => {
+                if (square.position.coordinates.col === 1) {
+                    if (row) {
+                        element.insertAdjacentElement('afterbegin', row);
+                    }
+                    row = document.createElement('tr');
+                }
+                let current = document.createElement('td');
+                current.innerHTML =
+                    square.piece ? CHARS[`${square.piece.color}.${square.piece.type}`] : '&nbsp;';
+                if (
+                    (square.position.coordinates.row % 2 !== 0 &&
+                    square.position.coordinates.col % 2 !== 0) ||
+                    (square.position.coordinates.row % 2 == 0 &&
+                    square.position.coordinates.col % 2 == 0)
+                ) {
+                    current.setAttribute('data-black', '');
+                }
+                current.setAttribute('data-idx', square.position.index);
+                row.appendChild(current);
+            });
+            element.insertAdjacentElement('afterbegin', row);
+            attachClickHandlers();
+        }
+
+        function setReplayPosition(position) {
+            window._chesstastic.replay.position = position;
+            const max_move = window._chesstastic.replay.data.length - 1;
+            document.getElementById('position').innerHTML = `Move ${position}/${max_move}`;
+            const state = window._chesstastic.replay.data[position].state
+            for (let i = 0; i < 64; i++) {
+                const piece = state[i];
+                const el = document.querySelector(`[data-idx="${i + 1}"]`);
+                el.innerHTML = piece ? CHARS[`${piece.color}.${piece.type}`] : '&nbsp;';
+            }
+            const bestMove = window._chesstastic.replay.data[position].best_move;
+            document.querySelectorAll('#board [data-selected]').forEach(el => {
+                el.removeAttribute('data-selected');
+            });
+            document.getElementById('bestmove').innerHTML = bestMove.algebraic;
+            document.querySelector(`[data-idx="${bestMove.source_index}"]`).setAttribute(
+                'data-selected',
+                'true',
+            );
+            document.querySelector(`[data-idx="${bestMove.target_index}"]`).setAttribute(
+                'data-selected',
+                'true',
+            );
+        }
+
+        function waitForTurn() {
+            fetch('/api/game/{{ object.pk }}/').then(r => r.json()).then(game => {
+                if (game.your_turn) {
+                    renderState(game.board.state);
+                    return;
+                }
+                setTimeout(waitForTurn, 2000);
+            });
+        }
+
+        function attachClickHandlers() {
+            document.querySelectorAll('#board [data-idx]').forEach(e => {
+                e.addEventListener('click', event => {
+                    const qs = document.querySelector('#board [data-selected]');
+                    if (qs) {
+                        qs.removeAttribute('data-selected');
+                        const source = qs.getAttribute('data-idx');
+                        const target = event.target.getAttribute('data-idx');
+                        if (source === target) {
+                            return;
+                        }
+                        let moveType = 'regular';
+                        if (parseInt(source) === 5) {
+                            if (parseInt(target) === 7) {
+                                moveType = 'castle_short';
+                            } else if (parseInt(target) === 3) {
+                                moveType = 'castle_long';
+                            }
+                        } else if (parseInt(source === 61)) {
+                            if (parseInt(target) === 63) {
+                                moveType = 'castle_short';
+                            } else if (parseInt(target) === 59) {
+                                moveType = 'castle_long';
+                            }
+                        } else if (event.target.innerHTML === '♟') {
+                            if ([1, 2, 3, 4, 5, 6, 7, 8].indexOf(parseInt(target)) > -1) {
+                                moveType = 'promotion_queen';
+                            }
+                        } else if (event.target.innerHTTML === '♙') {
+                            if ([57, 58, 59, 60, 61, 62, 63, 64].indexOf(parseInt(target)) > -1) {
+                                moveType = 'promotion_queen';
+                            }
+                        }
+                        const payload = {
+                            move: {
+                                source: parseInt(source),
+                                target: parseInt(target),
+                                move_type: moveType,
+                            },
+                        };
+                        fetch(`/api/game/{{ object.pk }}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(payload),
+                        }).then(d => d.json()).then(response => {
+                            if (response.status !== 200) {
+                                alert(response.invalid_reason);
+                            }
+                            renderState(response.board.state);
+                            if (response.game_over) {
+                                let winner = `${response.winner} won the game.`;
+                                if (!winner) {
+                                    winner = 'It\'s a draw.';
+                                }
+                                alert(`Game over. ${winner}`);
+                                window.location.href = '{% url "dashboard" %}';
+                            }
+                            if (!response.your_turn) {
+                                waitForTurn();
+                            }
+                        });
+                    } else {
+                        event.target.setAttribute('data-selected', 'selected');
+                    }
+                });
+            });
+            document.getElementById('resign').addEventListener('click', _ => {
+                fetch(`/api/game/{{ object.pk }}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        'move': {
+                            'move_type': 'resign',
+                        },
+                    }),
+                }).then(d => d.json()).then(response => {
+                    if (response.status !== 200) {
+                        alert(response.invalid_reason);
+                    } else {
+                        window.location.href = '{% url "dashboard" %}';
+                    }
+                });
+            });
+        }
+
+        function attachReplayHandlers() {
+            document.querySelector('#next').addEventListener('click', _ => {
+                if (window._chesstastic.replay.position >= window._chesstastic.replay.data.length - 1) {
+                    alert('End reached');
+                    return;
+                }
+                setReplayPosition(window._chesstastic.replay.position + 1);
+            });
+            document.querySelector('#prev').addEventListener('click', _ => {
+                if (window._chesstastic.replay.position <= 0) {
+                    alert('Start reached');
+                    return;
+                }
+                setReplayPosition(window._chesstastic.replay.position - 1);
+            });
+        }
+        
+        fetch('/api/game/{{ object.pk }}/').then(r => r.json()).then(game => {
+            renderState(game.board.state);
+            if (!game.your_turn) {
+                waitForTurn();
+            }
+            if (GAME_OVER) {
+                fetch('/api/game/{{ object.pk }}/replay/').then(r => r.json()).then(replay => {
+                    window._chesstastic.replay = {
+                        data: replay.steps,
+                        position: replay.steps.length - 1,
+                    };
+                    document.getElementById('position').innerHTML = `Replay loaded`;
+                    attachReplayHandlers();
+                })
+            }
+        });
+
+    </script>
+{% endblock %}

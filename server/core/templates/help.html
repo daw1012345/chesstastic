@@ -1,0 +1,222 @@
+{% extends '_base.html' %}
+
+{% load static %}
+
+{% block head %}
+    <style>
+
+        img {
+            max-width: 80%;
+            margin: 1rem 0 1rem 50%;
+            transform: translateX(-50%);
+        }
+
+    </style>
+{% endblock %}
+
+{% block main %}
+    <div class="ct-block">
+        <h1>
+            How to play Chess
+        </h1>
+        <hr>
+        <p>
+            Chesstastic follows the exact same game rules as a normal game of chess, but if you’ve
+            never played chess before or would like a refresh of the rules you’re in the right
+            place!
+        </p>
+        <h2>Setup</h2>
+        <p>
+            Let’s start with the setup. Chess is played on a board with 8 columns and 8 rows, so 64
+            squares. The squares alternate in color between white and black (or in our case green),
+            as you can see in the pictures. We will call them ‘black squares’ or ‘white squares’
+            when referring to them. These squares form the playing field where you and your
+            opponent battle it out. You and your opponents both have pieces that are located on
+            these squares. There are 8 types of pieces: pawn ♟︎, rook ♜, knight ♞, bishop ♝, queen
+            ♛ and king ♚. Each piece is either black or white of color, which, depending on which
+            color you’re playing as, determines which pieces are your own and which are your
+            opponents. When you start a game of Chesstastic, the game randomly selects which side
+            you will be playing as. In the pictures to follow, we will assume you’re playing as
+            white, but since the same rules apply to both black and white, it doesn’t matter which
+            side you’ll actually be playing as. The picture below shows the starting state for a
+            game of chess, this is always the same.
+        </p>
+        <img src="{% static 'help_images/startingposition.png' %}">
+        <h2>The game</h2>
+        <p>
+            In a game of chess, both players alternate in taking turns. The player with the white
+            pieces always has the first turn. A turn consists of making one move on the chessboard.
+            In a move, a player takes one of their own pieces and moves it to a different square,
+            where it is allowed to move to. This can either be an empty square or a square with an
+            opponents piece on it, but never a square that already has one of the players own
+            pieces on it. We will talk more about which movements a piece can make later on. A
+            player may never move a piece of the opponent and only one move can be made per turn.
+            There is one special move in which more than one piece is moved in one turn, but this
+            is explained in detail later on. 
+        </p>
+        <h2>Movements</h2>
+        <p>
+            Now you know what the pieces on the board look like, but how do they actually move?
+            Each type of piece has his own set of movements and it’s very important to know exactly
+            which ones are available at which time. We’ll start with a simple one and move up from
+            there.
+        </p>
+        <p>
+            <strong>Rook</strong><br>
+            Each player starts with two rooks in the corners of their side of the board. The rook 
+            can only move in horizontal or vertical lines, it cannot jump over other pieces and it
+            can take any opponents piece that it can move to. When a piece is taken, it is removed
+            from the board. What does this look like on the chessboard?
+        </p>
+        <img src="{% static 'help_images/rookmovement.png' %}">
+        <p>
+            <strong>Bishop</strong><br>
+            Each player starts with two bishops on their side of the board. The bishop moves very
+            similar to the rook, it can only move in diagonal lines, it cannot jump over other
+            pieces and it can take any opponents piece where it can move to. In practice this means
+            a bishop can never change the color of the square it stands on. What does this look
+            like on a chessboard?
+        </p>
+        <img src="{% static 'help_images/bishopmovement.png' %}">
+        <p>
+            <strong>Knight</strong><br>
+            Each player starts with two knights on their side of the board. The knight has an odd
+            way of moving. It can either move two squares vertically and one square horizontally
+            or one square vertically and two squares horizontally. It is the only piece that can
+            jump over other pieces and just like the rook and the bishop, it can take any opponents
+            piece where it can move to. What does this look like on the board?
+        </p>
+        <img src="{% static 'help_images/knightmovement.png' %}">
+        <p>
+            <strong>Queen</strong><br>
+            Each player starts with only on queen on their side of the board. (notice how we said
+            ‘starts’). The queen is the most powerful piece in the game, it can move vertically,
+            horizontally and diagonally! It cannot jump over other pieces and it can take any
+            opponents piece where it can move to. This means you can easily use the queen to put a
+            lot of pressure on the opponent, but be careful: losing your queen can lose you the
+            game fairly easy as well. What does the movement of the queen look like on a
+            chessboard?
+        </p>
+        <img src="{% static 'help_images/queenmovement.png' %}">
+        <p>
+            <strong>King</strong><br>
+            The king is the most important piece on the board, it must be protected at all times,
+            since when you lose it, you lost the game. The movement set of the king is quite
+            limited: it can move in all directions, but only one square far. It can take any
+            opponents piece that it can move to but it cannot jump over other pieces. What does
+            this look like on the board?
+        </p>
+        <img src="{% static 'help_images/kingmovement.png' %}">
+        <p>
+            Next to these basic moves, the king does have two special moves it can make. They are
+            both forms of castling. Castling is the only move that allows two pieces to move during
+            the same turn. During castling a king moves two spaces towards the rook that it will
+            castle with, and the rook jumps to the other side. The king can castle to either side
+            as long as all of the following are true:
+        </p>
+        <ol>
+            <li>The king has not moved.</li>
+            <li>The king is not threatened by any opponents pieces.</li>
+            <li>
+                The king does not move through or into squares that are threatened by any
+                opponents pieces.
+            </li>
+            <li>There are no pieces between the king and castling-side rook.</li>
+            <li>The castling-side rook has not moved.</li>
+        </ol>
+        <p>
+            What does castling look like on a chessboard?
+        </p>
+        <img src="{% static 'help_images/castlingmovement.png' %}">
+        <p>
+            And for some examples on when you are/are not allowed to castle:
+        </p>
+        <img src="{% static 'help_images/castlingallowed.png' %}">
+        <p>
+            <strong>Pawn</strong><br>
+            The final, and most common piece on the board is the pawn. Each player gets an entire
+            row of pawns, that’s eight of them. A pawn can move only one square in forwards
+            direction (up for white, down for black). You might wonder why we left the pawn until
+            the end since its basic move is the simplest of all. This is the case because the pawn
+            actually has quite some special moves which it can only perform under certain
+            circumstances. 
+        </p>
+        <ul>
+            <li>
+                <strong>Attack move</strong><br>
+                Let’s start with the attack move, a pawn cannot take pieces by moving forwards
+                horizontally, it will be blocked by any other piece. However, it can take pieces
+                diagonally. Only when an opponents piece is located either diagonally left or
+                diagonally right one square away from the pawn, can the pawn perform an attack
+                move. In this move, the pawn takes the opponents piece and moves to the place
+                where the opponents piece was. 
+            </li>
+            <li>
+                <strong>Double Jump&trade;</strong><br>
+                Another special move can make is a double move. Only when a pawn has not moved
+                from its starting row, can the double move be performed. When a pawn performs a
+                double move, it moves two squares forward instead of one. A double move cannot
+                jump over other pieces and is also blocked when other pieces are on the destination
+                square.
+            </li>
+            <li>
+                <strong>En Passant</strong><br>
+                The third special move of the pawn is called ‘en passant’. This move can only be
+                performed when an opponents pawn has just performed a double move and is moved to
+                a square next to the pawn. In that case, the pawn can move diagonally in the
+                direction of the opponents pawn as if performing an attack move. The opponents
+                pawn is taken during this move. En passant is the only move in chess where the
+                piece that takes is not moved to the location of the taken piece.
+            </li>
+            <li>
+                <strong>Promotion</strong><br>
+                The final special move a pawn can make is called a promotion. When a pawn reaches
+                the second to last row of the chessboard (for white the seventh row, for black the
+                second row) it can perform a promotion. The pawn performs a regular move, either
+                moving forward or attack, and is moved to the final row. The pawn can now be
+                replaced by a knight, bishop, rook or queen, which is why the move is called a
+                promotion. The player can decide for themselves which piece the pawn should be
+                replaced by. There are no limits as to how many knights, bishops, rooks or queens
+                a player can have at a time, so theoretically, a player could have nine queens
+                when all pawns are promoted. 
+            </li>
+        </ul>
+        <p>
+            What do all these moves look like on a chessboard?
+        </p>
+        <img src="{% static 'help_images/pawnmovement.png' %}">
+        <h2>Check and Checkmate</h2>
+        <p>
+            When a king is under immediate attack, it is said to be in check. A move in response
+            to a check is legal only if it results in a position where the king is no longer in
+            check. This can involve capturing the checking piece, interposing a piece between the
+            checking piece and the or moving the king to a square where it is not under attack.
+            As we showed before, castling is not a permissible response to a check.
+        </p>
+        <p>
+            So how do you win a game of chess? The object of the game is to checkmate the opponent.
+            This occurs when the opponent's king is in check, and there is no legal way to get it
+            out of check. It is never legal for a player to make a move that puts or leaves the
+            player's own king in check. This means that when the opponent is checkmated, you won
+            the game!
+        </p>
+        <p>
+            What does checking and checkmating look like on a chessboard?
+        </p>
+        <img src="{% static 'help_images/checkmate.png' %}">
+        <h2>End of the game</h2>
+        <p>
+            There are multiple ways a game of chess can end. The most definite one is winning by
+            checkmate. We already explained how to checkmate your opponent, when this happens, the
+            game ends and the winner is the player who checkmated their opponent. Another way to
+            win is to have the other player resign the game.
+        </p>
+        <p>
+            A game can also end in a draw. A draw can occur when a single game state occurs 3 times
+            in a match. This can happen after 3 consecutive moves, but doesn’t have to be the case.
+            A player can also always offer a draw, if their opponent chooses to except, the game
+            ends in a draw. A draw can also occur when a player has no more legal moves left to
+            make, but their king is not in check. What would be an example of a draw?
+        </p>
+    </div>
+{% endblock %}

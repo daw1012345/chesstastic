@@ -1,0 +1,50 @@
+{% extends '_base.html' %}
+
+{% load static %}
+
+{% block main %}
+    <div class="ct-block">
+        <h1>
+            Your account
+        </h1>
+        <hr>
+        <h2>Your information</h2>
+        <p>
+            <strong>Username:</strong>
+            {{ request.user.player.username }}
+            <a href="{% url 'username' %}">(change)</a>
+            <br>
+            <strong>E-mail:</strong>
+            {{ request.user.username }}
+        </p>
+        <h2>Board linking</h2>
+        {% if request.user.player.board_set.first %}
+            <p>
+                Board
+                <strong>{{ request.user.player.board_set.first.get_short_uid }}</strong>
+                linked to your account.
+            </p>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="submit" class="ct-danger" name="unlink" value="Unlink">
+            </form>
+        {% elif request.user.player.link_token != '' %}
+            <p class="ct-alert">
+                Waiting for your board...
+            </p>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="submit" class="ct-danger" name="unlink" value="Cancel linking process">
+            </form>
+        {% else %}
+            <p>
+                Ready to take your game to the next level? Link your board here!
+            </p>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form }}
+                <input type="submit">
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}

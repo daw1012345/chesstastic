@@ -1,0 +1,38 @@
+{% extends '_base.html' %}
+
+{% load static %}
+
+{% block head %}
+    <style>
+
+        #image {
+            max-height: 10rem;
+            margin: 0 0 0 50%;
+            transform: translateX(-50%);
+            opacity: .4;
+            margin-bottom: 1rem;
+        }
+
+    </style>
+{% endblock %}
+
+{% block main %}
+    <div class="ct-block">
+        <h1>
+            <span class="bx bxs-chess"></span>
+            Welcome to Chesstastic!
+        </h1>
+        <hr>
+        <img id="image" src="{% static 'image.svg' %}">
+        <p>
+            Chess will never be the same again. Chesstastic is a new way of playing chess where
+            you use an awesome half-physical half-digital chess board to play chess with real
+            pieces together with anyone, anywhere.
+        </p>
+        <div class="ct-buttons">
+            <a href="{% url 'login' %}">
+                <button>Log in to get started</button>
+            </a>
+        </div>
+    </div>
+{% endblock %}

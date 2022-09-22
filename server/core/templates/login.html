@@ -1,0 +1,21 @@
+{% extends '_base.html' %}
+
+{% block main %}
+    <div class="ct-block">
+        <h1>Log in</h1>
+        <hr>
+        <p>
+            Log in with your username and password to start playing!
+        </p>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form }}
+            <div class="ct-buttons">
+                <input type="submit" value="Log in">
+                <a href="{% url 'register' %}">
+                    Register
+                </a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

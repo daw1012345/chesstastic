@@ -1,0 +1,40 @@
+{% extends '_base.html' %}
+
+{% load static %}
+
+{% block main %}
+    <div class="ct-block">
+        <h1>
+            Welcome back, {{ request.user.player.username }}
+        </h1>
+        <hr>
+        <p>
+            Ready for a game? Pick one of the options below.
+        </p>
+        <div class="ct-blocks">
+            {% if active_game %}
+                <a href="{% url 'game' pk=active_game.pk %}">
+                    <span class="bx bx-play"></span><br>
+                    Continue game
+                </a>
+            {% else %}
+                <a href="{% url 'game_new' %}">
+                    <span class="bx bx-play"></span><br>
+                    New game
+                </a>
+            {% endif %}
+            <a href="{% url 'game_overview' %}">
+                <span class="bx bx-history"></span><br>
+                Game overview
+            </a>
+            <a href="{% url 'leaderboard' %}">
+                <span class="bx bxs-trophy"></span><br>
+                Leaderboard
+            </a>
+            <a href="{% url 'account' %}">
+                <span class="bx bxs-user-circle"></span><br>
+                Account
+            </a>
+        </div>
+    </div>
+{% endblock %}

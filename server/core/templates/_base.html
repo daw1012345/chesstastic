@@ -1,0 +1,64 @@
+{% load static %}
+
+<!doctype html>
+
+<html>
+
+    <head>
+        <title>Chesstastic</title>
+        <link rel="stylesheet" href="{% static 'style.css' %}">
+        <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;900&display=swap" rel="stylesheet">
+        <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+        {% block head %}{% endblock %}
+    </head>
+
+    <body>
+        <header>
+            <nav>
+                {% if not request.user.is_authenticated %}
+                    <a href="{% url 'home' %}">
+                        <span class="bx bxs-home"></span>&nbsp;
+                        Home
+                    </a>
+                    <a href="{% url 'about' %}">
+                        <span class="bx bxs-info-circle"></span>&nbsp;
+                        About us
+                    </a>
+                {% else %}
+                    <a href="{% url 'dashboard' %}">
+                        <span class="bx bxs-dashboard"></span>&nbsp;
+                        Dashboard
+                    </a>
+                    <a href="{% url 'help' %}">
+                        <span class="bx bxs-info-circle"></span>&nbsp;
+                        Help
+                    </a>
+                {% endif %}
+                <span></span>
+                {% if not request.user.is_authenticated %}
+                    <a href="{% url 'login' %}">
+                        <span class="bx bxs-key"></span>&nbsp;
+                        Log in
+                    </a>
+                {% else %}
+                    <p>
+                        Logged in as <strong>{{ request.user.player.username }}</strong>
+                    </p>
+                    <a href="{% url 'logout' %}">
+                        <span class="bx bxs-key"></span>&nbsp;
+                        Log out
+                    </a>
+                {% endif %}
+            </nav>
+        </header>
+        <main>
+            {% block main %}{% endblock %}
+        </main>
+        <footer>
+            <p>
+                <small>Chesstastic ~ Antoniu, Dawid, Jesse, Jitka, Mark, Silas</small>
+            </p>
+        </footer>
+    </body>
+
+</html>

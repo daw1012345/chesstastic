@@ -1,0 +1,22 @@
+{% extends '_base.html' %}
+
+{% load static %}
+
+{% block main %}
+    <div class="ct-block">
+        <h1>
+            Start a new game
+        </h1>
+        <hr>
+        <p>
+            Fill out the form below to start a new game.
+        </p>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form }}
+            <div class="ct-buttons">
+                <input type="submit" value="Start game">
+            </div>
+        </form>
+    </div>
+{% endblock %}

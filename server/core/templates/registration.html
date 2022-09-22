@@ -1,0 +1,18 @@
+{% extends '_base.html' %}
+
+{% block main %}
+    <div class="ct-block">
+        <h1>Register</h1>
+        <hr>
+        <p>
+            Fill in the fields below and press submit to create a new account!
+        </p>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form }}
+            <div class="ct-buttons">
+                <input type="submit" value="Submit">
+            </div>
+        </form>
+    </div>
+{% endblock %}

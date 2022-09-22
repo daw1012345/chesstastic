@@ -1,0 +1,59 @@
+{% extends '_base.html' %}
+
+{% load static %}
+
+{% block main %}
+    <div class="ct-block">
+        <h1>
+            Past games
+        </h1>
+        <hr>
+        {% if games|length == 0 %}
+            <p>
+                <em>
+                    There are no finished games.
+                    <a href="{% url 'game_new' %}">
+                        Why not play one?
+                    </a>
+                </em>
+            </p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Opponent</th>
+                        <th>Status</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for game in games %}
+                        <tr>
+                            <td>
+                                {% if request.user.player == game.white %}
+                                    {{ game.black.username }}
+                                {% else %}
+                                    {{ game.white.username }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if game.winner == request.user.player %}
+                                    Won
+                                {% elif not game.winner %}
+                                    Tie
+                                {% else %}
+                                    LOSER
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'game' pk=game.pk %}">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}
